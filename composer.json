@@ -1,0 +1,12 @@
+{
+    "name": "lunar/payments-plugin-cs-cart",
+    "description": "Lunar Online Payments for CS-Cart",
+    "type": "cs-cart addon",
+    "license": "MIT",
+    "authors": [
+      {
+        "name": "Lunar",
+        "email": "support@lunar.app"
+      }
+    ]
+}

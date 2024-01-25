@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<addon scheme="3.0">
+    <id>kp_lunar</id>
+    <name>Lunar Payment Gateway</name>
+    <version>1.0</version>
+    <priority>5200</priority>
+    <position>0</position>
+    <default_language>en</default_language>
+    <auto_install>MULTIVENDOR</auto_install>
+    <status>active</status>
+    <supplier>Lunar.app</supplier>
+    <supplier_link>https://lunar.app</supplier_link>
+    <author>
+        <name>Lunar.app</name>
+        <url>https://lunar.app</url>
+        <email>support@lunar.app</email>
+    </author>
+    <queries>
+        <item for="install">
+            REPLACE INTO ?:payment_processors (`processor`,`processor_script`,`processor_template`,`admin_template`,`callback`,`type`)
+            VALUES ('lunar','lunar.php', 'views/orders/components/payments/cc_outside.tpl','lunar.tpl', 'Y', 'P');
+        </item>
+    </queries>
+    <functions>
+        <item for="uninstall">kp_lunar_delete_payment_processors</item>
+    </functions>
+</addon>
