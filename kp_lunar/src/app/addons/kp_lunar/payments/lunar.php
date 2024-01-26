@@ -38,8 +38,8 @@ if (defined('PAYMENT_NOTIFICATION')) {
 
                     $pp_response['reason_text'] = __("delayed");
                     $pp_response['transaction_id'] = $txnId;
-                    $pp_response['kp_lunar.order_time'] = kp_lunar_datetime_to_human($fetch['transaction']['created']);
-                    $pp_response['kp_lunar.currency_code'] = $fetch['transaction']['currency'];
+                    $pp_response['lunar.order_time'] = lunar_datetime_to_human($fetch['transaction']['created']);
+                    $pp_response['lunar.currency_code'] = $fetch['transaction']['currency'];
                     $pp_response['authorized_amount'] = $fetch['transaction']['amount'];
                     //$pp_response['captured_amount'] = $fetch['transaction']['capturedAmount'];
                     $pp_response['captured'] = 'N';
@@ -61,8 +61,8 @@ if (defined('PAYMENT_NOTIFICATION')) {
                     $pp_response['order_status'] = 'P';
                     $pp_response['reason_text'] = __("captured");
                     $pp_response['transaction_id'] = $txnId;
-                    $pp_response['kp_lunar.order_time'] = kp_lunar_datetime_to_human($capture['transaction']['created']);
-                    $pp_response['kp_lunar.currency_code'] = $capture['transaction']['currency'];
+                    $pp_response['lunar.order_time'] = lunar_datetime_to_human($capture['transaction']['created']);
+                    $pp_response['lunar.currency_code'] = $capture['transaction']['currency'];
                     $pp_response['authorized_amount'] = $capture['transaction']['amount'] / $currency_multiplier;
                     $pp_response['captured_amount'] = $capture['transaction']['capturedAmount'] / $currency_multiplier;
                     $pp_response['captured'] = 'Y';
@@ -102,10 +102,10 @@ if (defined('PAYMENT_NOTIFICATION')) {
     $platform = [
         'name' => 'CS-Cart ' . PRODUCT_NAME,
         'version' => PRODUCT_VERSION,
-        'addon_name' => 'kp_lunar',
-        'addon_version' => fn_get_addon_version('kp_lunar'),
+        'addon_name' => 'lunar',
+        'addon_version' => fn_get_addon_version('lunar'),
     ];
     $view->assign('platform', $platform);
-    // $view->display('addons/kp_lunar/components/payment_page.tpl');
+    // $view->display('addons/lunar/components/payment_page.tpl');
     die(1);
 }

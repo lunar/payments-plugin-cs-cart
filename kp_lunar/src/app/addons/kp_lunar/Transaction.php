@@ -1,6 +1,6 @@
 <?php
 
-namespace kp_lunar;
+namespace lunar;
 
 use Tygh\Enum\OrderDataTypes;
 
@@ -30,9 +30,9 @@ class Transaction
         if (isset($api_response['captureState']) && 'completed' === $api_response['captureState']) {
             $payment_info['reason_text'] = __("captured");
             $payment_info['transaction_id'] = $txnId;
-            $payment_info['kp_lunar.order_time'] = kp_lunar_datetime_to_human($api_response['transaction']['created']);
-            $payment_info['kp_lunar.currency_code'] = $api_response['transaction']['currency'];
-            $payment_info['kp_lunar.authorized_amount'] = ($api_response['transaction']['amount']);
+            $payment_info['lunar.order_time'] = lunar_datetime_to_human($api_response['transaction']['created']);
+            $payment_info['lunar.currency_code'] = $api_response['transaction']['currency'];
+            $payment_info['lunar.authorized_amount'] = ($api_response['transaction']['amount']);
             $payment_info['captured_amount'] = $api_response['transaction']['capturedAmount'];
             $payment_info['captured'] = 'Y';
             array_filter($payment_info);
@@ -65,9 +65,9 @@ class Transaction
         if (isset($api_response['refundState']) && 'completed' === $api_response['refundState']) {
             $payment_info['reason_text'] = __("refunded");
             $payment_info['transaction_id'] = $txnId;
-            $payment_info['kp_lunar.order_time'] = kp_lunar_datetime_to_human($api_response['transaction']['created']);
-            $payment_info['kp_lunar.currency_code'] = $api_response['transaction']['currency'];
-            $payment_info['kp_lunar.authorized_amount'] = ($api_response['transaction']['amount']);
+            $payment_info['lunar.order_time'] = lunar_datetime_to_human($api_response['transaction']['created']);
+            $payment_info['lunar.currency_code'] = $api_response['transaction']['currency'];
+            $payment_info['lunar.authorized_amount'] = ($api_response['transaction']['amount']);
             $payment_info['captured_amount'] = $api_response['transaction']['capturedAmount'];
             $payment_info['refunded_amount'] = $api_response['transaction']['refundedAmount'];
             $payment_info['captured'] = 'Y';
@@ -102,8 +102,8 @@ class Transaction
         if (isset($api_response['cancelState']) && 'completed' === $api_response['cancelState']) {
             $payment_info['reason_text'] = __("voided");
             $payment_info['transaction_id'] = $txnId;
-            $payment_info['kp_lunar.order_time'] = kp_lunar_datetime_to_human($api_response['transaction']['created']);
-            $payment_info['kp_lunar.currency_code'] = $api_response['transaction']['currency'];
+            $payment_info['lunar.order_time'] = lunar_datetime_to_human($api_response['transaction']['created']);
+            $payment_info['lunar.currency_code'] = $api_response['transaction']['currency'];
             $payment_info['voided_amount'] = $api_response['transaction']['voidedAmount'];
             $payment_info['captured'] = 'N';
             $payment_info['voided'] = 'Y';

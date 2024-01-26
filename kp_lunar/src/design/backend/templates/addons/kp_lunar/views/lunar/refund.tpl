@@ -4,7 +4,7 @@
 
         <fieldset >
             <div class="control-group">
-                <label class="control-label cm-required" for="elm_amount">{__("kp_lunar.amount")}</label>
+                <label class="control-label cm-required" for="elm_amount">{__("lunar.amount")}</label>
                 <div class="controls">
                     <input type="number" name="amount" id="elm_amount" step="0.01" min="1" max="{$amount}" value="{$amount}" />
                 </div>
@@ -14,8 +14,8 @@
         <input type="hidden" name="order_id" value="{$order_id}" />
 
         <div class="buttons-container">
-            <input type="submit" class="btn btn-primary" name="dispatch[lunar.refund]" value="{__("kp_lunar.refund")}" />
-            {include file="addons/kp_lunar/components/close_popup.tpl"}
+            <input type="submit" class="btn btn-primary" name="dispatch[lunar.refund]" value="{__("lunar.refund")}" />
+            {include file="addons/lunar/components/close_popup.tpl"}
         </div>
 
     </form>

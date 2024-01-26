@@ -11,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $order_info = fn_get_order_info($order_id);
         $txnId = !empty($order_info['payment_info']['transaction_id']) ? $order_info['payment_info']['transaction_id'] : '';
         if ($amount <= $order_info['total']) {
-            $cc = \kp_lunar\Transaction::refund($order_info, $txnId, $amount);
+            $cc = \lunar\Transaction::refund($order_info, $txnId, $amount);
         }
         return array(CONTROLLER_STATUS_OK, 'orders.details?order_id=' . $order_id);
     }

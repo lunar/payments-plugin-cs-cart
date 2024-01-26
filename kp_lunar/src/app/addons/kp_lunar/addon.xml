@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <addon scheme="3.0">
-    <id>kp_lunar</id>
+    <id>lunar</id>
     <name>Lunar Payment Gateway</name>
     <version>1.0</version>
     <priority>5200</priority>
@@ -22,6 +22,6 @@
         </item>
     </queries>
     <functions>
-        <item for="uninstall">kp_lunar_delete_payment_processors</item>
+        <item for="uninstall">lunar_delete_payment_processors</item>
     </functions>
 </addon>

@@ -2,7 +2,7 @@
 
 use Tygh\Registry;
 
-function kp_lunar_get_order_statuses_list()
+function lunar_get_order_statuses_list()
 {
     $statuses = fn_get_statuses();
     $data = array();
@@ -12,7 +12,7 @@ function kp_lunar_get_order_statuses_list()
     return $data;
 }
 
-function fn_kp_lunar_change_order_status($status_to, $status_from, &$order_info, $force_notification, $order_statuses, $place_order)
+function fn_lunar_change_order_status($status_to, $status_from, &$order_info, $force_notification, $order_statuses, $place_order)
 {
     $doCapture = false;
     $doVoid = false;
@@ -35,13 +35,13 @@ function fn_kp_lunar_change_order_status($status_to, $status_from, &$order_info,
         }
     }
     if ($doCapture) {
-        $cc = \kp_lunar\Transaction::capture($order_info, $txnId);
+        $cc = \lunar\Transaction::capture($order_info, $txnId);
     } elseif ($doVoid) {
-        $cc = \kp_lunar\Transaction::void($order_info, $txnId);
+        $cc = \lunar\Transaction::void($order_info, $txnId);
     }
 }
 
-function kp_lunar_can_refund_order($order_info)
+function lunar_can_refund_order($order_info)
 {
     $out = false;
     if ($order_info['payment_method']['processor'] == 'Lunar') {
@@ -57,13 +57,13 @@ function kp_lunar_can_refund_order($order_info)
     return $out;
 }
 
-function kp_lunar_delete_payment_processors()
+function lunar_delete_payment_processors()
 {
     db_query("UPDATE ?:payments SET processor_id = 0, processor_params='', status='D' WHERE processor_id IN (SELECT processor_id FROM ?:payment_processors WHERE processor_script IN ('lunar.php'))");
     db_query("DELETE FROM ?:payment_processors WHERE processor_script IN ('lunar.php')");
 }
 
-function kp_lunar_datetime_to_human($dt)
+function lunar_datetime_to_human($dt)
 {
     $t = strtotime($dt);
     $out = sprintf(
