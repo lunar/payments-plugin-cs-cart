@@ -17,8 +17,22 @@
     </author>
     <queries>
         <item for="install">
-            REPLACE INTO ?:payment_processors (`processor`,`processor_script`,`processor_template`,`admin_template`,`callback`,`type`)
-            VALUES ('lunar','lunar.php', 'views/orders/components/payments/cc_outside.tpl','lunar.tpl', 'Y', 'P');
+            REPLACE INTO ?:payment_processors (
+                `processor`,
+                `processor_script`,
+                `processor_template`,
+                `admin_template`,
+                `callback`,
+                `type`
+            )
+            VALUES (
+                'Lunar Payment Gateway',
+                'lunar.php',
+                'views/orders/components/payments/cc_outside.tpl',
+                'lunar.tpl', 
+                'Y', 
+                'P',
+            );
         </item>
     </queries>
     <functions>
