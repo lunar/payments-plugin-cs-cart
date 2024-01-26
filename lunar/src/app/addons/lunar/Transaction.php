@@ -1,6 +1,6 @@
 <?php
 
-namespace lunar;
+namespace Lunar\Payment;
 
 use Tygh\Enum\OrderDataTypes;
 
@@ -140,6 +140,6 @@ class Transaction
         $lunar_settings = fn_get_processor_data($order_info['payment_id']);
         $app_key = $lunar_settings['processor_params']['app_key'];
 
-        return new \Lunar\Lunar($app_key, null, !! $_COOKIE['lunar_testmode']);
+        return new \Lunar\Lunar($app_key, null, !! fn_get_cookie('lunar_testmode'));
     }
 }

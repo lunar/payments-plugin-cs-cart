@@ -1,7 +1,5 @@
 <?php
 
-use Tygh\Registry;
-
 if (!defined('BOOTSTRAP')) die('Access denied');
 
 if (defined('PAYMENT_NOTIFICATION')) {
@@ -22,11 +20,9 @@ if (defined('PAYMENT_NOTIFICATION')) {
 
         $app_key = $processor_data['processor_params']['app_key'];
 
-        Lunar\Client::setKey($app_key);
-
         if ($order_info && !empty($txnId)) {
             if ($processor_data['processor_params']['checkout_mode'] == 'delayed') {
-                $fetch = Lunar\Transaction::fetch($txnId);
+                $fetch = \Lunar\Payment\Transaction::fetch($txnId);
 
                 if (is_array($fetch) && !isset($fetch['transaction'])) {
                     $pp_response['order_status'] = 'F';
@@ -45,13 +41,15 @@ if (defined('PAYMENT_NOTIFICATION')) {
                     $pp_response['captured'] = 'N';
                     array_filter($pp_response);
                 }
+
             } else {
 
                 $data = array(
                     'currency'   => $order_info['currency'],
                     'amount'     => $order_info['total'],
                 );
-                $capture = Lunar\Transaction::capture($txnId, $data);
+
+                $capture = \Lunar\Payment\Transaction::capture($txnId, $data);
 
                 if (is_array($capture) && !isset($capture['transaction'])) {
                     $message = implode(',', $capture);

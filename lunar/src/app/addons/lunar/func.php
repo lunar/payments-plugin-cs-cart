@@ -35,9 +35,9 @@ function fn_lunar_change_order_status($status_to, $status_from, &$order_info, $f
         }
     }
     if ($doCapture) {
-        $cc = \lunar\Transaction::capture($order_info, $txnId);
+        \Lunar\Payment\Transaction::capture($order_info, $txnId);
     } elseif ($doVoid) {
-        $cc = \lunar\Transaction::void($order_info, $txnId);
+        \Lunar\Payment\Transaction::void($order_info, $txnId);
     }
 }
 
