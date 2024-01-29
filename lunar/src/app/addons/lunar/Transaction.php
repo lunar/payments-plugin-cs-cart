@@ -2,21 +2,37 @@
 
 namespace Lunar\Payment;
 
-use Tygh\Enum\OrderDataTypes;
-
 if (!class_exists('\\Lunar\\Lunar')) {
     require_once(dirname(__FILE__) . '/vendor/autoload.php');
 }
 
+use Lunar\Exception\ApiException;
+use Tygh\Enum\OrderDataTypes;
+
+
 class Transaction
 {
+
+    /**  */
+    public static function fetch($order_info, $txnId)
+    {
+        $api_client = self::buildApiClientUsingOrderPayment($order_info);
+
+        try {
+            return $api_client->payments()->fetch($txnId);
+        } catch (ApiException $e) {
+            // maybe we don't need to log this
+            // fn_log_event('general', 'lunar_fetch', ['errors' => $e->getMessage()]);
+            return [];
+        }
+    }
 
     /**  */
     public static function capture(&$order_info, $txnId)
     {
         $data = [
             'amount' => [
-                'currency' => 'USD', // @TODO get currency from order_data
+                'currency' => $order_info['secondary_currency'],
                 'decimal' => $order_info['total'],
             ]
         ];
@@ -54,7 +70,7 @@ class Transaction
     {
         $data = array(
             'amount' => [
-                'currency' => 'USD',
+                'currency' => $order_info['secondary_currency'],
                 'decimal' => $amount,
             ]
         );
@@ -91,7 +107,7 @@ class Transaction
     {
         $data = array(
             'amount' => [
-                'currency' => 'USD',
+                'currency' => $order_info['secondary_currency'],
                 'decimal' => $order_info['total'],
             ]
         );
@@ -126,11 +142,11 @@ class Transaction
     {
         $paymentInfo = false;
         $additional_data = db_get_hash_single_array("SELECT type,data FROM ?:order_data WHERE order_id = ?i", ['type', 'data'], $order_id);
-        
+
         if (!empty($additional_data[OrderDataTypes::PAYMENT])) {
             $paymentInfo = unserialize(fn_decrypt_text($additional_data[OrderDataTypes::PAYMENT]));
         }
-        
+
         return $paymentInfo;
     }
 
@@ -140,6 +156,6 @@ class Transaction
         $lunar_settings = fn_get_processor_data($order_info['payment_id']);
         $app_key = $lunar_settings['processor_params']['app_key'];
 
-        return new \Lunar\Lunar($app_key, null, !! fn_get_cookie('lunar_testmode'));
+        return new \Lunar\Lunar($app_key, null, !!fn_get_cookie('lunar_testmode'));
     }
 }
