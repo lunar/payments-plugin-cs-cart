@@ -9,13 +9,13 @@ if (!class_exists('\\Lunar\\Lunar')) {
 // BEFORE REDIRECT
 if (!defined('PAYMENT_NOTIFICATION')) {
 
-    $paymentParams = $order_info['payment_method']['processor_params'];
+    $payment_params = $order_info['payment_method']['processor_params'];
 
-    $args = lunarGetArgs($order_info);
+    $args = fn_lunar_get_args($order_info);
 
     $test_mode = !! fn_get_cookie('lunar_testmode');
 
-    $api_client = new \Lunar\Lunar($paymentParams['app_key'], null, $test_mode);
+    $api_client = new \Lunar\Lunar($payment_params['app_key'], null, $test_mode);
 
     $payment_intent_id = $api_client->payments()->create($args);
 
@@ -123,18 +123,18 @@ if (!defined('PAYMENT_NOTIFICATION')) {
 /**
  * 
  */
-function lunarGetArgs($order_info)
+function fn_lunar_get_args($order_info)
 {
     $order = $order_info;
-    $paymentParams = $order_info['payment_method']['processor_params'];
+    $payment_params = $order_info['payment_method']['processor_params'];
 
-    $customer = lunarGetCustomerData($order);
+    $customer = fn_lunar_get_customer_data($order);
 
     $args = [
         'integration' => [
-            'key' => $paymentParams['public_key'],
-            'name' => $paymentParams['shop_title'],
-            'logo' => $paymentParams['logo_url'],
+            'key' => $payment_params['public_key'],
+            'name' => $payment_params['shop_title'],
+            'logo' => $payment_params['logo_url'],
         ],
         'amount'     => [
             'currency' => $order['secondary_currency'], // primary currency means base store currency, secondary - used one 
@@ -142,7 +142,7 @@ function lunarGetArgs($order_info)
         ],
         'custom' => [
             'orderId'    => $order['order_id'],
-            'products'   => lunarGetFormattedProducts($order),
+            'products'   => fn_lunar_get_formatted_products($order),
             'customer'   => [
                 'name'    => $customer['firstname'] . ' ' . $customer['lastname'],
                 'address' => $customer['address'] . ', ' . $customer['city'] . ', ' . $customer['state'] . ', ' 
@@ -161,15 +161,15 @@ function lunarGetArgs($order_info)
         'preferredPaymentMethod' => 'card',
     ];
 
-    if (!empty($paymentParams['configuration_id'])) {
+    if (!empty($payment_params['configuration_id'])) {
         $args['mobilePayConfiguration'] = [
-            'configurationID' => $paymentParams['configuration_id'],
-            'logo' => $paymentParams['logo_url'],
+            'configurationID' => $payment_params['configuration_id'],
+            'logo' => $payment_params['logo_url'],
         ];
     }
 
     if (!! fn_get_cookie('lunar_testmode')) {
-        $args['test'] = lunarGetTestObject($order);
+        $args['test'] = fn_lunar_get_test_object($order);
     }
 
     return $args;
@@ -178,7 +178,7 @@ function lunarGetArgs($order_info)
 /**
  * 
  */
-function lunarGetCustomerData($order)
+function fn_lunar_get_customer_data($order)
 {
     return [
         'firstname' => !empty($order['b_firstname'])   ?   $order['b_firstname']  :  (!empty($order['s_firstname']) ? $order['s_firstname'] : ''),
@@ -194,7 +194,7 @@ function lunarGetCustomerData($order)
 /**
  * 
  */
-function lunarGetFormattedProducts($order)
+function fn_lunar_get_formatted_products($order)
 {
     $products = [];
     foreach ( $order['products'] as $product ) {
@@ -211,7 +211,7 @@ function lunarGetFormattedProducts($order)
 /**
  * 
  */
-function lunarGetTestObject($order)
+function fn_lunar_get_test_object($order)
 {
     return [
         "card"        => [
