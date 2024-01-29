@@ -128,15 +128,7 @@ function lunarGetArgs($order_info)
     $order = $order_info;
     $paymentParams = $order_info['payment_method']['processor_params'];
 
-    $customer = [
-        'firstname' => !empty($order['b_firstname']) ? $order['b_firstname'] : $order['s_firstname'],
-        'lastname' => !empty($order['b_lastname']) ? $order['b_lastname'] : $order['s_lastname'],
-        'address' => !empty($order['b_address']) ? $order['b_address'] : $order['s_address'],
-        'city' => !empty($order['b_city']) ? $order['b_city'] : $order['s_city'],
-        'state' => !empty($order['b_state']) ? $order['b_state'] : $order['s_state'],
-        'zip' => !empty($order['b_zipcode']) ? $order['b_zipcode'] : $order['s_zipcode'],
-        'country' => !empty($order['b_country']) ? $order['b_country'] : $order['s_country'],
-    ];
+    $customer = lunarGetCustomerData($order);
 
     $args = [
         'integration' => [
@@ -145,7 +137,7 @@ function lunarGetArgs($order_info)
             'logo' => $paymentParams['logo_url'],
         ],
         'amount'     => [
-            'currency' => $order['secondary_currency'], // @TODO get currency from elsewhere if possible 
+            'currency' => $order['secondary_currency'], // primary currency means base store currency, secondary - used one 
             'decimal' => $order['total'],
         ],
         'custom' => [
@@ -157,7 +149,7 @@ function lunarGetArgs($order_info)
                                 . $customer['zip'] . ', ' . $customer['country'],
                 'email'   => $order['email'],
                 'phoneNo' => $order['phone'],
-                'ip'      => !empty(fn_get_ip()['host']) ? fn_get_ip()['host'] : $_SERVER['REMOTE_ADDR'],
+                'ip'      => $order['ip_address'],
             ],
             'platform' => [
                 'name' => PRODUCT_NAME,
@@ -177,30 +169,26 @@ function lunarGetArgs($order_info)
     }
 
     if (!! fn_get_cookie('lunar_testmode')) {
-        $args['test'] = [
-            "card"        => [
-                "scheme"  => "supported",
-                "code"    => "valid",
-                "status"  => "valid",
-                "limit"   => [
-                    "decimal"  => "25000.99",
-                    "currency" => $order['secondary_currency'],
-                ],
-                "balance" => [
-                    "decimal"  => "25000.99",
-                    "currency" => $order['secondary_currency'],
-                ]
-            ],
-            "fingerprint" => "success",
-            "tds"         => array(
-                "fingerprint" => "success",
-                "challenge"   => true,
-                "status"      => "authenticated"
-            ),
-        ];
+        $args['test'] = lunarGetTestObject($order);
     }
 
     return $args;
+}
+
+/**
+ * 
+ */
+function lunarGetCustomerData($order)
+{
+    return [
+        'firstname' => !empty($order['b_firstname'])   ?   $order['b_firstname']  :  (!empty($order['s_firstname']) ? $order['s_firstname'] : ''),
+        'lastname' => !empty($order['b_lastname'])   ?   $order['b_lastname']  :  (!empty($order['s_lastname']) ? $order['s_lastname'] : ''),
+        'address' => !empty($order['b_address'])   ?   $order['b_address']  :  (!empty($order['s_address']) ? $order['s_address'] : ''),
+        'city' => !empty($order['b_city'])   ?   $order['b_city']  :  (!empty($order['s_city']) ? $order['s_city'] : ''),
+        'state' => !empty($order['b_state'])   ?   $order['b_state']  :  (!empty($order['s_state']) ? $order['s_state'] : ''),
+        'zip' => !empty($order['b_zipcode'])   ?   $order['b_zipcode']  :  (!empty($order['s_zipcode']) ? $order['s_zipcode'] : ''),
+        'country' => !empty($order['b_country'])   ?   $order['b_country']  :  (!empty($order['s_country']) ? $order['s_country'] : ''),
+    ];
 }
 
 /**
@@ -218,4 +206,32 @@ function lunarGetFormattedProducts($order)
     }
 
     return $products;
+}
+
+/**
+ * 
+ */
+function lunarGetTestObject($order)
+{
+    return [
+        "card"        => [
+            "scheme"  => "supported",
+            "code"    => "valid",
+            "status"  => "valid",
+            "limit"   => [
+                "decimal"  => "25000.99",
+                "currency" => $order['secondary_currency'],
+            ],
+            "balance" => [
+                "decimal"  => "25000.99",
+                "currency" => $order['secondary_currency'],
+            ]
+        ],
+        "fingerprint" => "success",
+        "tds"         => array(
+            "fingerprint" => "success",
+            "challenge"   => true,
+            "status"      => "authenticated"
+        ),
+    ];
 }
