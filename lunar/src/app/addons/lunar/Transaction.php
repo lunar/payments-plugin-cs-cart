@@ -7,6 +7,7 @@ if (!class_exists('\\Lunar\\Lunar')) {
 }
 
 use Lunar\Exception\ApiException;
+use Tygh\Enum\NotificationSeverity;
 use Tygh\Enum\OrderDataTypes;
 
 
@@ -14,42 +15,63 @@ class Transaction
 {
 
     /**  */
-    public static function fetch($order_info, $txnId)
+    public static function create($order_info, $args)
     {
         $api_client = self::buildApiClientUsingOrderPayment($order_info);
 
         try {
-            return $api_client->payments()->fetch($txnId);
+            return $api_client->payments()->create($args);
         } catch (ApiException $e) {
-            // maybe we don't need to log this
-            // fn_log_event('general', 'lunar_fetch', ['errors' => $e->getMessage()]);
+            fn_log_event('general', 'lunar_create_payment_intent', ['errors' => $e->getMessage()]);
+    
+            fn_set_notification(NotificationSeverity::ERROR, __('error'), __('lunar.create_payment_error'));
+            
+            fn_redirect('checkout.checkout');
+        }
+    }
+
+    /**  */
+    public static function fetch($order_info, $transaction_id)
+    {
+        $api_client = self::buildApiClientUsingOrderPayment($order_info);
+
+        try {
+            return $api_client->payments()->fetch($transaction_id);
+        } catch (ApiException $e) {
+            fn_log_event('general', 'lunar_fetch', ['errors' => $e->getMessage()]);
             return [];
         }
     }
 
     /**  */
-    public static function capture(&$order_info, $txnId)
+    public static function capture(&$order_info, $transaction_id)
     {
         $data = [
             'amount' => [
                 'currency' => $order_info['secondary_currency'],
-                'decimal' => $order_info['total'],
+                'decimal' => (string) $order_info['total'],
             ]
         ];
 
         $api_client = self::buildApiClientUsingOrderPayment($order_info);
-        $api_response = $api_client->payments()->capture($txnId, $data);
+        
+        try {
+            $api_response = $api_client->payments()->capture($transaction_id, $data);
+        } catch (ApiException $e) {
+            fn_log_event('general', 'lunar_capture', ['errors' => $e->getMessage()]);
+            return null;
+        }
 
         $update = false;
         $payment_info = [];
 
         if (isset($api_response['captureState']) && 'completed' === $api_response['captureState']) {
             $payment_info['reason_text'] = __("captured");
-            $payment_info['transaction_id'] = $txnId;
+            $payment_info['transaction_id'] = $transaction_id;
             $payment_info['lunar.order_time'] = lunar_datetime_to_human($api_response['transaction']['created']);
-            $payment_info['lunar.currency_code'] = $api_response['transaction']['currency'];
-            $payment_info['lunar.authorized_amount'] = ($api_response['transaction']['amount']);
-            $payment_info['captured_amount'] = $api_response['transaction']['capturedAmount'];
+            $payment_info['lunar.currency_code'] = $api_response['amount']['currency'];
+            $payment_info['lunar.authorized_amount'] = $api_response['amount']['decimal'];
+            $payment_info['captured_amount'] = $api_response['amount']['decimal'];
             $payment_info['captured'] = 'Y';
             array_filter($payment_info);
             $update = true;
@@ -66,26 +88,32 @@ class Transaction
     }
 
     /**  */
-    public static function refund(&$order_info, $txnId, $amount)
+    public static function refund(&$order_info, $transaction_id, $amount)
     {
         $data = array(
             'amount' => [
                 'currency' => $order_info['secondary_currency'],
-                'decimal' => $amount,
+                'decimal' => (string) $amount,
             ]
         );
 
         $api_client = self::buildApiClientUsingOrderPayment($order_info);
-        $api_response = $api_client->payments()->refund($txnId, $data);
+
+        try {
+            $api_response = $api_client->payments()->refund($transaction_id, $data);
+        } catch (ApiException $e) {
+            fn_log_event('general', 'lunar_refund', ['errors' => $e->getMessage()]);
+            return null;
+        }
 
         if (isset($api_response['refundState']) && 'completed' === $api_response['refundState']) {
             $payment_info['reason_text'] = __("refunded");
-            $payment_info['transaction_id'] = $txnId;
+            $payment_info['transaction_id'] = $transaction_id;
             $payment_info['lunar.order_time'] = lunar_datetime_to_human($api_response['transaction']['created']);
-            $payment_info['lunar.currency_code'] = $api_response['transaction']['currency'];
-            $payment_info['lunar.authorized_amount'] = ($api_response['transaction']['amount']);
-            $payment_info['captured_amount'] = $api_response['transaction']['capturedAmount'];
-            $payment_info['refunded_amount'] = $api_response['transaction']['refundedAmount'];
+            $payment_info['lunar.currency_code'] = $api_response['amount']['currency'];
+            $payment_info['lunar.authorized_amount'] = $api_response['amount']['decimal'];
+            $payment_info['captured_amount'] = $api_response['amount']['decimal'];
+            $payment_info['refunded_amount'] = $amount;
             $payment_info['captured'] = 'Y';
             $payment_info['refunded'] = 'Y';
             array_filter($payment_info);
@@ -103,23 +131,30 @@ class Transaction
     }
 
     /**  */
-    public static function void(&$order_info, $txnId)
+    public static function void(&$order_info, $transaction_id)
     {
         $data = array(
             'amount' => [
                 'currency' => $order_info['secondary_currency'],
-                'decimal' => $order_info['total'],
+                'decimal' => (string) $order_info['total'],
             ]
         );
 
         $api_client = self::buildApiClientUsingOrderPayment($order_info);
-        $api_response = $api_client->payments()->cancel($txnId, $data);
+
+        try {
+            $api_response = $api_client->payments()->cancel($transaction_id, $data);
+        } catch (ApiException $e) {
+            fn_log_event('general', 'lunar_void', ['errors' => $e->getMessage()]);
+            return null;
+        }
 
         if (isset($api_response['cancelState']) && 'completed' === $api_response['cancelState']) {
             $payment_info['reason_text'] = __("voided");
-            $payment_info['transaction_id'] = $txnId;
+            $payment_info['transaction_id'] = $transaction_id;
             $payment_info['lunar.order_time'] = lunar_datetime_to_human($api_response['transaction']['created']);
-            $payment_info['lunar.currency_code'] = $api_response['transaction']['currency'];
+            $payment_info['lunar.currency_code'] = $api_response['amount']['currency'];
+            $payment_info['lunar.authorized_amount'] = $api_response['amount']['decimal'];
             $payment_info['voided_amount'] = $api_response['transaction']['voidedAmount'];
             $payment_info['captured'] = 'N';
             $payment_info['voided'] = 'Y';

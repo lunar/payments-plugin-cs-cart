@@ -82,6 +82,10 @@ msgstr "If checkout mode is Delayed, then when the order is set to this status w
 
 
 
+msgctxt "Languages::lunar.create_payment_error"
+msgid "lunar.create_payment_error"
+msgstr "Creating payment failed. Please try again."
+
 msgctxt "Languages::lunar.we_are_processing_your_payment_text"
 msgid "lunar.we_are_processing_your_payment_text"
 msgstr "We are processing your payment, please do not refresh the page."

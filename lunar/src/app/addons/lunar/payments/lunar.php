@@ -2,42 +2,36 @@
 
 if (!defined('BOOTSTRAP')) die('Access denied');
 
-if (!class_exists('\\Lunar\\Lunar')) {
-    require_once(dirname(__DIR__) . '/vendor/autoload.php');
+if (!class_exists('\\Lunar\\Payment\\Transaction')) {
+    require_once(dirname(__DIR__) . '/Transaction.php');
 }
+
+use Lunar\Payment\Transaction;
 
 // BEFORE REDIRECT
 if (!defined('PAYMENT_NOTIFICATION')) {
 
-    $payment_params = $order_info['payment_method']['processor_params'];
-
     $args = fn_lunar_get_args($order_info);
 
-    $test_mode = !! fn_get_cookie('lunar_testmode');
-
-    $api_client = new \Lunar\Lunar($payment_params['app_key'], null, $test_mode);
-
-    $payment_intent_id = $api_client->payments()->create($args);
+    $payment_intent_id = Transaction::create($order_info, $args);
 
     $remote_url = 'https://pay.lunar.money/?id=';
-    if ($test_mode) {
+    if (!!fn_get_cookie('lunar_testmode')) {
         $remote_url = 'https://hosted-checkout-git-develop-lunar-app.vercel.app/?id=';
     }
 
-    header('Location: ' . $remote_url . $payment_intent_id);
-
-    exit(0);
+    fn_redirect($remote_url . $payment_intent_id, true);
 
 // CALLBACK
 } elseif (defined('PAYMENT_NOTIFICATION')) {
 
-    $pp_response = [];
-    $pp_response['order_status'] = 'F';
-    $pp_response['reason_text'] = __('text_transaction_declined');
+    $response_data = [];
+    $response_data['order_status'] = 'F';
+    $response_data['reason_text'] = __('text_transaction_declined');
     $order_id = !empty($_REQUEST['order_id']) ? (int)$_REQUEST['order_id'] : 0;
 
     if ($mode == 'cancel') {
-        $pp_response['reason_text'] = __('text_transaction_canceled');
+        $response_data['reason_text'] = __('text_transaction_canceled');
 
     } elseif ($mode == 'payed') {
         $order_info = fn_get_order_info($order_id);
@@ -46,77 +40,67 @@ if (!defined('PAYMENT_NOTIFICATION')) {
             $processor_data = fn_get_processor_data($order_info['payment_id']);
         }
 
-        $app_key = $processor_data['processor_params']['app_key'];
+        $transaction_id = !empty($order_info['payment_info']['transaction_id']) ? $order_info['payment_info']['transaction_id'] : '';
+
+        $fetch = Transaction::fetch($order_info, $transaction_id);
+
+        if (empty($fetch['autorisationCreated'])) {
+            fn_lunar_finalize_order($order_id, $response_data);
+        }
 
         if ($order_info) {
             if ($processor_data['processor_params']['checkout_mode'] == 'delayed') {
-                // $fetch = \Lunar\Payment\Transaction::fetch($txnId);
 
-                // @TODO make a function to process this data
+                $response_data['order_status'] = $processor_data['processor_params']['delayed_status'];
+                $response_data['reason_text'] = __("delayed");
+                $response_data['transaction_id'] = $transaction_id;
+                $response_data['lunar.order_time'] = lunar_datetime_to_human($order_info['timestamp']);
+                $response_data['lunar.currency_code'] = $fetch['amount']['currency'];
+                $response_data['authorized_amount'] = $fetch['amount']['decimal'];
+                // $response_data['captured'] = 'N';
+                // array_filter($response_data);
 
-                // if (is_array($fetch) && !isset($fetch['transaction'])) {
-                //     $pp_response['order_status'] = 'F';
-                //     $pp_response['reason_text'] = implode(',', $fetch);
-                // } elseif (is_array($fetch) && $fetch['transaction']['custom']['order_id'] == $order_id) {
-                    // $total = $fetch['transaction']['amount'];
-                    // $amount = $fetch['transaction']['amount'];
-                    // $pp_response['order_status'] = $processor_data['processor_params']['delayed_status'];
-
-                    // $pp_response['reason_text'] = __("delayed");
-                    // $pp_response['transaction_id'] = $txnId;
-                    // $pp_response['lunar.order_time'] = lunar_datetime_to_human($fetch['transaction']['created']);
-                    // $pp_response['lunar.currency_code'] = $fetch['transaction']['currency'];
-                    // $pp_response['authorized_amount'] = $fetch['transaction']['amount'];
-
-                    $total = $order_info['total'];
-                    $pp_response['order_status'] = $processor_data['processor_params']['delayed_status'];
-
-                    $pp_response['reason_text'] = __("delayed");
-                    $pp_response['transaction_id'] = $order_info;
-                    $pp_response['lunar.order_time'] = lunar_datetime_to_human($order_info['timestamp']);
-                    $pp_response['lunar.currency_code'] = $order_info['secondary_currency'];
-                    // $pp_response['authorized_amount'] = $order_info['amount'];
-                    $pp_response['authorized_amount'] = "36";
-
-
-
-                    //$pp_response['captured_amount'] = $fetch['transaction']['capturedAmount'];
-                    $pp_response['captured'] = 'N';
-                    array_filter($pp_response);
-                // }
             } else {
-                $data = array(
-                    'currency'   => $order_info['secondary_currency'],
-                    'amount'     => $order_info['total'],
-                );
-                $capture = \Lunar\Payment\Transaction::capture($txnId, $data);
+                $data = [
+                    'amount' => [
+                        'currency' => $order_info['secondary_currency'],
+                        'decimal' => (string) $order_info['total'],
+                    ]
+                ];
 
-                if (is_array($capture) && !isset($capture['transaction'])) {
-                    $message = implode(',', $capture);
-                    $pp_response['order_status'] = 'F';
-                    $pp_response['reason_text'] = $message;
-                } elseif (!empty($capture['transaction'])) {
-                    $pp_response['order_status'] = 'P';
-                    $pp_response['reason_text'] = __("captured");
-                    $pp_response['transaction_id'] = $txnId;
-                    $pp_response['lunar.order_time'] = lunar_datetime_to_human($capture['transaction']['created']);
-                    $pp_response['lunar.currency_code'] = $capture['transaction']['currency'];
-                    $pp_response['authorized_amount'] = $capture['transaction']['amount'] / $currency_multiplier;
-                    $pp_response['captured_amount'] = $capture['transaction']['capturedAmount'] / $currency_multiplier;
-                    $pp_response['captured'] = 'Y';
-                    array_filter($pp_response);
+                $capture = Transaction::capture($order_info, $transaction_id);
+
+                if (isset($api_response['captureState']) && 'completed' === $api_response['captureState']) {
+                    $response_data['order_status'] = 'P';
+                    $response_data['reason_text'] = __("captured");
+                    $response_data['transaction_id'] = $transaction_id;
+                    $response_data['lunar.order_time'] = lunar_datetime_to_human(time());
+                    $response_data['lunar.currency_code'] = $data['amount']['currency'];
+                    $response_data['authorized_amount'] = $data['amount']['decimal'];
+                    $response_data['captured_amount'] = $data['amount']['decimal'];
+                    $response_data['captured'] = 'Y';
+                    array_filter($response_data);
                 } else {
-                    $transaction_failed = true;
+                    $response_data['reason_text'] = isset($api_response['declinedReason']) ? $api_response['declinedReason']['error'] : '';
+                    $response_data['order_status'] = 'F';
                 }
             }
         }
     }
     
     if (fn_check_payment_script('lunar.php', $order_id)) {
-        fn_finish_payment($order_id, $pp_response);
-        fn_order_placement_routines('route', $order_id);
+        fn_lunar_finalize_order($order_id, $response_data);
     }
+}
 
+
+/**
+ * 
+ */
+function fn_lunar_finalize_order($order_id, $response_data)
+{
+    fn_finish_payment($order_id, $response_data);
+    fn_order_placement_routines('route', $order_id);
 }
 
 
