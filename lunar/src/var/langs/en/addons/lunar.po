@@ -24,6 +24,10 @@ msgctxt "Languages::lunar.checkout_mode"
 msgid "lunar.checkout_mode"
 msgstr "Checkout mode"
 
+msgctxt "Languages::lunar.delayed_status"
+msgid "lunar.delayed_status"
+msgstr "Delayed mode status"
+
 msgctxt "Languages::lunar.shop_title"
 msgid "lunar.shop_title"
 msgstr "Shop title"

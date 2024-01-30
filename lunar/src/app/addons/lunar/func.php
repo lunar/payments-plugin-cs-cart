@@ -21,20 +21,20 @@ function fn_lunar_change_order_status($status_to, $status_from, &$order_info, $f
 {
     $doCapture = false;
     $doVoid = false;
-    $txnId = false;
+    $transaction_id = false;
 
     if ($order_info['payment_method']['processor'] == 'lunar') {
         if ($order_info['payment_method']['processor_params']['checkout_mode'] == 'delayed') {
             if ($order_info['payment_method']['processor_params']['capture_status'] == $status_to && $order_info['payment_method']['processor_params']['delayed_status'] == $status_from) {
                 $captured = !empty($order_info['payment_info']['captured']) ? $order_info['payment_info']['captured'] : 'Y';
-                $txnId = !empty($order_info['payment_info']['transaction_id']) ? $order_info['payment_info']['transaction_id'] : '';
-                if ($captured == 'N' && !empty($txnId)) {
+                $transaction_id = !empty($order_info['payment_info']['transaction_id']) ? $order_info['payment_info']['transaction_id'] : '';
+                if ($captured == 'N' && !empty($transaction_id)) {
                     $doCapture = true;
                 }
             } elseif ($order_info['payment_method']['processor_params']['void_status'] == $status_to && $order_info['payment_method']['processor_params']['delayed_status'] == $status_from) {
                 $captured = !empty($order_info['payment_info']['captured']) ? $order_info['payment_info']['captured'] : 'Y';
-                $txnId = !empty($order_info['payment_info']['transaction_id']) ? $order_info['payment_info']['transaction_id'] : '';
-                if ($captured == 'N' && !empty($txnId)) {
+                $transaction_id = !empty($order_info['payment_info']['transaction_id']) ? $order_info['payment_info']['transaction_id'] : '';
+                if ($captured == 'N' && !empty($transaction_id)) {
                     $doVoid = true;
                 }
             }
@@ -42,9 +42,9 @@ function fn_lunar_change_order_status($status_to, $status_from, &$order_info, $f
     }
 
     if ($doCapture) {
-        Transaction::capture($order_info, $txnId);
+        Transaction::capture($order_info, $transaction_id);
     } elseif ($doVoid) {
-        Transaction::void($order_info, $txnId);
+        Transaction::void($order_info, $transaction_id);
     }
 }
 
@@ -54,10 +54,10 @@ function lunar_can_refund_order($order_info)
     if ($order_info['payment_method']['processor'] == 'lunar') {
         $captured = !empty($order_info['payment_info']['captured']) ? $order_info['payment_info']['captured'] : 'Y';
         $refunded = !empty($order_info['payment_info']['refunded']) ? $order_info['payment_info']['refunded'] : 'N';
-        $txnId = !empty($order_info['payment_info']['transaction_id']) ? $order_info['payment_info']['transaction_id'] : '';
+        $transaction_id = !empty($order_info['payment_info']['transaction_id']) ? $order_info['payment_info']['transaction_id'] : '';
         $captured_amount = !empty($order_info['payment_info']['captured_amount']) ? floatval($order_info['payment_info']['captured_amount']) : 0;
         $refunded_amount = !empty($order_info['payment_info']['refunded_amount']) ? floatval($order_info['payment_info']['refunded_amount']) : 0;
-        if ($captured == 'Y' && !empty($txnId) && $captured_amount > 0 && ($refunded == 'N' || ($refunded == 'Y' && $refunded_amount < $captured_amount))) {
+        if ($captured == 'Y' && !empty($transaction_id) && $captured_amount > 0 && ($refunded == 'N' || ($refunded == 'Y' && $refunded_amount < $captured_amount))) {
             $out = true;
         }
     }
