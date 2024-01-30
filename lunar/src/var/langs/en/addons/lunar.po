@@ -36,10 +36,6 @@ msgctxt "Languages::lunar.description"
 msgid "lunar.description"
 msgstr "Description"
 
-msgctxt "Languages::lunar.delayed_status"
-msgid "lunar.delayed_status"
-msgstr "Delayed mode status"
-
 msgctxt "Languages::lunar.capture_status"
 msgid "lunar.capture_status"
 msgstr "Capture status"
