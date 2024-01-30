@@ -20,7 +20,7 @@ class Transaction
         $api_client = self::buildApiClientUsingOrderPayment($order_info);
 
         try {
-            return $api_client->payments()->create($args);
+            $payment_intent_id = $api_client->payments()->create($args);
         } catch (ApiException $e) {
             fn_log_event('general', 'lunar_create_payment_intent', ['errors' => $e->getMessage()]);
     
@@ -28,6 +28,11 @@ class Transaction
             
             fn_redirect('checkout.checkout');
         }
+
+        $payment_info['transaction_id'] = $payment_intent_id;
+        fn_update_order_payment_info($order_info['order_id'], $payment_info);
+
+        return $payment_intent_id;
     }
 
     /**  */
@@ -68,10 +73,10 @@ class Transaction
         if (isset($api_response['captureState']) && 'completed' === $api_response['captureState']) {
             $payment_info['reason_text'] = __("captured");
             $payment_info['transaction_id'] = $transaction_id;
-            $payment_info['lunar.order_time'] = lunar_datetime_to_human($api_response['transaction']['created']);
-            $payment_info['lunar.currency_code'] = $api_response['amount']['currency'];
-            $payment_info['lunar.authorized_amount'] = $api_response['amount']['decimal'];
-            $payment_info['captured_amount'] = $api_response['amount']['decimal'];
+            $payment_info['lunar.order_time'] = lunar_datetime_to_human(time());
+            $payment_info['lunar.currency_code'] = $data['amount']['currency'];
+            $payment_info['lunar.authorized_amount'] = $data['amount']['decimal'];
+            $payment_info['captured_amount'] = $data['amount']['decimal'];
             $payment_info['captured'] = 'Y';
             array_filter($payment_info);
             $update = true;
@@ -85,6 +90,8 @@ class Transaction
             fn_update_order_payment_info($order_info['order_id'], $payment_info);
             $order_info['payment_info'] = self::reloadPaymentInfo($order_info['order_id']);
         }
+
+        return $payment_info;
     }
 
     /**  */
@@ -109,7 +116,7 @@ class Transaction
         if (isset($api_response['refundState']) && 'completed' === $api_response['refundState']) {
             $payment_info['reason_text'] = __("refunded");
             $payment_info['transaction_id'] = $transaction_id;
-            $payment_info['lunar.order_time'] = lunar_datetime_to_human($api_response['transaction']['created']);
+            $payment_info['lunar.order_time'] = lunar_datetime_to_human(time());
             $payment_info['lunar.currency_code'] = $api_response['amount']['currency'];
             $payment_info['lunar.authorized_amount'] = $api_response['amount']['decimal'];
             $payment_info['captured_amount'] = $api_response['amount']['decimal'];
@@ -152,7 +159,7 @@ class Transaction
         if (isset($api_response['cancelState']) && 'completed' === $api_response['cancelState']) {
             $payment_info['reason_text'] = __("voided");
             $payment_info['transaction_id'] = $transaction_id;
-            $payment_info['lunar.order_time'] = lunar_datetime_to_human($api_response['transaction']['created']);
+            $payment_info['lunar.order_time'] = lunar_datetime_to_human(time());
             $payment_info['lunar.currency_code'] = $api_response['amount']['currency'];
             $payment_info['lunar.authorized_amount'] = $api_response['amount']['decimal'];
             $payment_info['voided_amount'] = $api_response['transaction']['voidedAmount'];
