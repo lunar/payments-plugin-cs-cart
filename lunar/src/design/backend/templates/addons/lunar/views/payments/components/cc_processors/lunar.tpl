@@ -1,4 +1,15 @@
 <div class="control-group">
+    <label class="control-label" for="payment_method">{__("lunar.payment_method")}:</label>
+    <label class="control-label" for="lunar_card">{__("lunar.payment_method.card")}
+        <input type="radio" name="payment_data[processor_params][payment_method]" id="lunar_card" value="{$processor_params.payment_method}" class="input-radio" />
+    </label>
+
+    <label class="control-label" for="lunar_mobilepay">{__("lunar.payment_method.mobilepay")}
+        <input type="radio" name="payment_data[processor_params][payment_method]" id="lunar_mobilepay" value="{$processor_params.payment_method}" class="input-radio" />
+    </label>
+</div>
+
+<div class="control-group">
     <label class="control-label" for="mo_app_key">{__("lunar.app_key")}:</label>
     <div class="controls">
         <input type="text" name="payment_data[processor_params][app_key]" id="mo_app_key" value="{$processor_params.app_key}" class="input-text" size="60" />
@@ -9,6 +20,13 @@
     <label class="control-label" for="mo_public_key">{__("lunar.public_key")}:</label>
     <div class="controls">
         <input type="text" name="payment_data[processor_params][public_key]" id="mo_public_key" value="{$processor_params.public_key}" class="input-text" size="60" />
+    </div>
+</div>
+
+<div class="control-group">
+    <label class="control-label" for="mo_configuration_id">{__("lunar.configuration_id")}:</label>
+    <div class="controls">
+        <input type="text" name="payment_data[processor_params][configuration_id]" id="mo_configuration_id" value="{$processor_params.configuration_id}" class="input-text" size="60" />
     </div>
 </div>
 

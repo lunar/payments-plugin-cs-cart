@@ -8,13 +8,29 @@ msgctxt "Addons::description::lunar"
 msgid "Lunar Payment Gateway"
 msgstr "Lunar Payment Gateway"
 
-msgctxt "Languages::lunar.public_key"
-msgid "lunar.public_key"
-msgstr "Public key"
+msgctxt "Languages::lunar.payment_method"
+msgid "lunar.payment_method"
+msgstr "Select a payment method"
+
+msgctxt "Languages::lunar.payment_method.card"
+msgid "lunar.payment_method.card"
+msgstr "Card"
+
+msgctxt "Languages::lunar.payment_method.mobilepay"
+msgid "lunar.payment_method.mobilepay"
+msgstr "MobilePay"
 
 msgctxt "Languages::lunar.app_key"
 msgid "lunar.app_key"
 msgstr "App key"
+
+msgctxt "Languages::lunar.public_key"
+msgid "lunar.public_key"
+msgstr "Public key"
+
+msgctxt "Languages::lunar.configuration_id"
+msgid "lunar.configuration_id"
+msgstr "Configuration ID"
 
 msgctxt "Languages::lunar.logo_url"
 msgid "lunar.logo_url"
