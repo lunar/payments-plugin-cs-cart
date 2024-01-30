@@ -1,6 +1,11 @@
 <?php
 
-use Tygh\Registry;
+if (!class_exists('\\Lunar\\Payment\\Transaction')) {
+    require_once('Transaction.php');
+}
+
+use Lunar\Payment\Transaction;
+
 
 function lunar_get_order_statuses_list()
 {
@@ -17,7 +22,8 @@ function fn_lunar_change_order_status($status_to, $status_from, &$order_info, $f
     $doCapture = false;
     $doVoid = false;
     $txnId = false;
-    if ($order_info['payment_method']['processor'] == 'Lunar') {
+
+    if ($order_info['payment_method']['processor'] == 'lunar') {
         if ($order_info['payment_method']['processor_params']['checkout_mode'] == 'delayed') {
             if ($order_info['payment_method']['processor_params']['capture_status'] == $status_to && $order_info['payment_method']['processor_params']['delayed_status'] == $status_from) {
                 $captured = !empty($order_info['payment_info']['captured']) ? $order_info['payment_info']['captured'] : 'Y';
@@ -34,17 +40,18 @@ function fn_lunar_change_order_status($status_to, $status_from, &$order_info, $f
             }
         }
     }
+
     if ($doCapture) {
-        \Lunar\Payment\Transaction::capture($order_info, $txnId);
+        Transaction::capture($order_info, $txnId);
     } elseif ($doVoid) {
-        \Lunar\Payment\Transaction::void($order_info, $txnId);
+        Transaction::void($order_info, $txnId);
     }
 }
 
 function lunar_can_refund_order($order_info)
 {
     $out = false;
-    if ($order_info['payment_method']['processor'] == 'Lunar') {
+    if ($order_info['payment_method']['processor'] == 'lunar') {
         $captured = !empty($order_info['payment_info']['captured']) ? $order_info['payment_info']['captured'] : 'Y';
         $refunded = !empty($order_info['payment_info']['refunded']) ? $order_info['payment_info']['refunded'] : 'N';
         $txnId = !empty($order_info['payment_info']['transaction_id']) ? $order_info['payment_info']['transaction_id'] : '';
@@ -68,8 +75,8 @@ function lunar_datetime_to_human($dt)
     $t = strtotime($dt);
     $out = sprintf(
         "%s %s",
-        fn_date_format($t, Registry::get('settings.Appearance.date_format')),
-        fn_date_format($t, Registry::get('settings.Appearance.time_format'))
+        fn_date_format($t, \Tygh\Registry::get('settings.Appearance.date_format')),
+        fn_date_format($t, \Tygh\Registry::get('settings.Appearance.time_format'))
     );
     return $out;
 }
