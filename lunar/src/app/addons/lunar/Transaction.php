@@ -115,13 +115,7 @@ class Transaction
 
         if (isset($api_response['refundState']) && 'completed' === $api_response['refundState']) {
             $payment_info['reason_text'] = __("refunded");
-            $payment_info['transaction_id'] = $transaction_id;
-            $payment_info['lunar.order_time'] = lunar_datetime_to_human(time());
-            $payment_info['lunar.currency_code'] = $api_response['amount']['currency'];
-            $payment_info['lunar.authorized_amount'] = $api_response['amount']['decimal'];
-            $payment_info['captured_amount'] = $api_response['amount']['decimal'];
             $payment_info['refunded_amount'] = $amount;
-            $payment_info['captured'] = 'Y';
             $payment_info['refunded'] = 'Y';
             array_filter($payment_info);
             $update = true;
@@ -158,12 +152,7 @@ class Transaction
 
         if (isset($api_response['cancelState']) && 'completed' === $api_response['cancelState']) {
             $payment_info['reason_text'] = __("voided");
-            $payment_info['transaction_id'] = $transaction_id;
-            $payment_info['lunar.order_time'] = lunar_datetime_to_human(time());
-            $payment_info['lunar.currency_code'] = $api_response['amount']['currency'];
-            $payment_info['lunar.authorized_amount'] = $api_response['amount']['decimal'];
-            $payment_info['voided_amount'] = $api_response['transaction']['voidedAmount'];
-            $payment_info['captured'] = 'N';
+            $payment_info['voided_amount'] = $data['transaction']['voidedAmount'];
             $payment_info['voided'] = 'Y';
             array_filter($payment_info);
             $update = true;

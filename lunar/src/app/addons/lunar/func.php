@@ -21,9 +21,9 @@ function fn_lunar_change_order_status($status_to, $status_from, &$order_info, $f
 {
     $doCapture = false;
     $doVoid = false;
-    $transaction_id = false;
+    $transaction_id = null;
 
-    if ($order_info['payment_method']['processor'] == 'lunar') {
+    if ($order_info['payment_method']['processor'] == 'Lunar Payment Gateway') {
         if ($order_info['payment_method']['processor_params']['checkout_mode'] == 'delayed') {
             if ($order_info['payment_method']['processor_params']['capture_status'] == $status_to && $order_info['payment_method']['processor_params']['delayed_status'] == $status_from) {
                 $captured = !empty($order_info['payment_info']['captured']) ? $order_info['payment_info']['captured'] : 'Y';
@@ -43,7 +43,8 @@ function fn_lunar_change_order_status($status_to, $status_from, &$order_info, $f
 
     if ($doCapture) {
         Transaction::capture($order_info, $transaction_id);
-    } elseif ($doVoid) {
+    } 
+    if ($doVoid) {
         Transaction::void($order_info, $transaction_id);
     }
 }
@@ -51,7 +52,7 @@ function fn_lunar_change_order_status($status_to, $status_from, &$order_info, $f
 function lunar_can_refund_order($order_info)
 {
     $out = false;
-    if ($order_info['payment_method']['processor'] == 'lunar') {
+    if ($order_info['payment_method']['processor'] == 'Lunar Payment Gateway') {
         $captured = !empty($order_info['payment_info']['captured']) ? $order_info['payment_info']['captured'] : 'Y';
         $refunded = !empty($order_info['payment_info']['refunded']) ? $order_info['payment_info']['refunded'] : 'N';
         $transaction_id = !empty($order_info['payment_info']['transaction_id']) ? $order_info['payment_info']['transaction_id'] : '';
@@ -70,13 +71,13 @@ function lunar_delete_payment_processors()
     db_query("DELETE FROM ?:payment_processors WHERE processor_script IN ('lunar.php')");
 }
 
-function lunar_datetime_to_human($dt)
+function lunar_datetime_to_human($date_time)
 {
-    $t = strtotime($dt);
+    $timestamp = is_string($date_time) ? strtotime($date_time) : $date_time;
     $out = sprintf(
         "%s %s",
-        fn_date_format($t, \Tygh\Registry::get('settings.Appearance.date_format')),
-        fn_date_format($t, \Tygh\Registry::get('settings.Appearance.time_format'))
+        fn_date_format($timestamp, \Tygh\Registry::get('settings.Appearance.date_format')),
+        fn_date_format($timestamp, \Tygh\Registry::get('settings.Appearance.time_format'))
     );
     return $out;
 }

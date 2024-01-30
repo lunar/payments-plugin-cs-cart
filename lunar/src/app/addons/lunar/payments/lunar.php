@@ -55,7 +55,7 @@ if (!defined('PAYMENT_NOTIFICATION')) {
             $response_data['order_status'] = $processor_data['processor_params']['delayed_status'];
             $response_data['reason_text'] = __("delayed");
             $response_data['transaction_id'] = $transaction_id;
-            $response_data['lunar.order_time'] = lunar_datetime_to_human($order_info['timestamp']);
+            $response_data['lunar.order_time'] = lunar_datetime_to_human(time());
             $response_data['lunar.currency_code'] = $fetch['amount']['currency'];
             $response_data['authorized_amount'] = $fetch['amount']['decimal'];
             $response_data['captured'] = 'N';
