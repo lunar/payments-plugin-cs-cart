@@ -23,7 +23,8 @@
                 `processor_template`,
                 `admin_template`,
                 `callback`,
-                `type`
+                `type`,
+                `addon`
             )
             VALUES (
                 'Lunar Payment Gateway',
@@ -32,6 +33,7 @@
                 'lunar.tpl', 
                 'Y', 
                 'P',
+                'lunar'
             );
         </item>
     </queries>
