@@ -44,47 +44,46 @@ if (!defined('PAYMENT_NOTIFICATION')) {
 
         $fetch = Transaction::fetch($order_info, $transaction_id);
 
-        if (empty($fetch['autorisationCreated'])) {
+        if (empty($fetch['authorisationCreated']) || !$order_info) {
             fn_lunar_finalize_order($order_id, $response_data);
         }
 
-        if ($order_info) {
-            if ($processor_data['processor_params']['checkout_mode'] == 'delayed') {
 
-                $response_data['order_status'] = $processor_data['processor_params']['delayed_status'];
-                $response_data['reason_text'] = __("delayed");
-                $response_data['transaction_id'] = $transaction_id;
-                $response_data['lunar.order_time'] = lunar_datetime_to_human($order_info['timestamp']);
-                $response_data['lunar.currency_code'] = $fetch['amount']['currency'];
-                $response_data['authorized_amount'] = $fetch['amount']['decimal'];
-                // $response_data['captured'] = 'N';
-                // array_filter($response_data);
+        if ($processor_data['processor_params']['checkout_mode'] == 'delayed') {
+            $response_data['order_status'] = $processor_data['processor_params']['delayed_status'];
+            $response_data['reason_text'] = __("delayed");
+            $response_data['transaction_id'] = $transaction_id;
+            $response_data['lunar.order_time'] = lunar_datetime_to_human($order_info['timestamp']);
+            $response_data['lunar.currency_code'] = $fetch['amount']['currency'];
+            $response_data['authorized_amount'] = $fetch['amount']['decimal'];
+            $response_data['captured'] = 'N';
+            array_filter($response_data);
 
-            } else {
-                $data = [
-                    'amount' => [
-                        'currency' => $order_info['secondary_currency'],
-                        'decimal' => (string) $order_info['total'],
-                    ]
-                ];
+        } else {
+            $data = [
+                'amount' => [
+                    'currency' => $order_info['secondary_currency'],
+                    'decimal' => (string) $order_info['total'],
+                ]
+            ];
 
-                $capture = Transaction::capture($order_info, $transaction_id);
+            $response_data = Transaction::capture($order_info, $transaction_id);
 
-                if (isset($api_response['captureState']) && 'completed' === $api_response['captureState']) {
-                    $response_data['order_status'] = 'P';
-                    $response_data['reason_text'] = __("captured");
-                    $response_data['transaction_id'] = $transaction_id;
-                    $response_data['lunar.order_time'] = lunar_datetime_to_human(time());
-                    $response_data['lunar.currency_code'] = $data['amount']['currency'];
-                    $response_data['authorized_amount'] = $data['amount']['decimal'];
-                    $response_data['captured_amount'] = $data['amount']['decimal'];
-                    $response_data['captured'] = 'Y';
-                    array_filter($response_data);
-                } else {
-                    $response_data['reason_text'] = isset($api_response['declinedReason']) ? $api_response['declinedReason']['error'] : '';
-                    $response_data['order_status'] = 'F';
-                }
-            }
+            $response_data['order_status'] = 'P';
+            // if (isset($api_response['captureState']) && 'completed' === $api_response['captureState']) {
+            //     $response_data['order_status'] = 'P';
+            //     $response_data['reason_text'] = __("captured");
+            //     $response_data['transaction_id'] = $transaction_id;
+            //     $response_data['lunar.order_time'] = lunar_datetime_to_human(time());
+            //     $response_data['lunar.currency_code'] = $data['amount']['currency'];
+            //     $response_data['authorized_amount'] = $data['amount']['decimal'];
+            //     $response_data['captured_amount'] = $data['amount']['decimal'];
+            //     $response_data['captured'] = 'Y';
+            //     array_filter($response_data);
+            // } else {
+            //     $response_data['reason_text'] = isset($api_response['declinedReason']) ? $api_response['declinedReason']['error'] : '';
+            //     $response_data['order_status'] = 'F';
+            // }
         }
     }
     
