@@ -9,7 +9,6 @@ if (!class_exists('\\Lunar\\Payment\\Transaction')) {
 use Lunar\Payment\Transaction;
 
 !defined('ORDER_STATUS_FAILED') ? define('ORDER_STATUS_FAILED', 'F') : null;
-!defined('ORDER_STATUS_PAYD') ? define('ORDER_STATUS_PAYD', 'P') : null;
 
 // BEFORE REDIRECT
 if (!defined('PAYMENT_NOTIFICATION')) {
@@ -63,7 +62,7 @@ if (!defined('PAYMENT_NOTIFICATION')) {
 
         } else {
             $response_data = Transaction::capture($order_info, $transaction_id);
-            $response_data['order_status'] = ORDER_STATUS_PAYD;
+            $response_data['order_status'] = $processor_data['processor_params']['capture_status'];
         }
     }
     
