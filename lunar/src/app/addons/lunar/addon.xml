@@ -31,7 +31,7 @@
                 'lunar.php',
                 'views/orders/components/payments/cc_outside.tpl',
                 'lunar.tpl', 
-                'Y', 
+                'N', 
                 'P',
                 'lunar'
             );

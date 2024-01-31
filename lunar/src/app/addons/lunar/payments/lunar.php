@@ -24,7 +24,7 @@ if (!defined('PAYMENT_NOTIFICATION')) {
 
     fn_redirect($remote_url . $payment_intent_id, true);
 
-// CALLBACK
+// AFTER REDIRECT
 } elseif (defined('PAYMENT_NOTIFICATION')) {
 
     $response_data = [];
