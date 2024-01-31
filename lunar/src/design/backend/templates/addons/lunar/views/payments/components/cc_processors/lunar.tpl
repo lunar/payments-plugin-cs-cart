@@ -33,12 +33,22 @@
 
 <script type="text/javascript">
 {literal}
+    if (jQuery('#lunar_mobilepay').is(':checked')) {
+        jQuery('#mo_configuration_id').parents('.control-group').show();
+        jQuery('[for="mo_configuration_id"]').addClass('cm-required');
+    } else {
+        jQuery('#mo_configuration_id').parents('.control-group').hide();
+        jQuery('#mo_configuration_id').val('');
+        jQuery('[for="mo_configuration_id"]').removeClass('cm-required');
+    }
+
     jQuery('[name="payment_data[processor_params][payment_method]"]').on('click', (e) => {
         if ('lunar_mobilepay' === e.target.id) {
             jQuery('#mo_configuration_id').parents('.control-group').show();
             jQuery('[for="mo_configuration_id"]').addClass('cm-required');
         } else {
             jQuery('#mo_configuration_id').parents('.control-group').hide();
+            jQuery('#mo_configuration_id').val('');
             jQuery('[for="mo_configuration_id"]').removeClass('cm-required');
         }
     })
