@@ -110,3 +110,11 @@
         <p>{__("lunar.void_status_help")}</p>
     </div>
 </div>
+
+
+<script type="text/javascript">
+{literal}
+    jQuery('[id="elm_payment_name_0"]').val('{/literal}{__("lunar.payment_method.card")}{literal}');
+    jQuery('[id="elm_payment_description_0"]').val('{/literal}{__("lunar.description")}{literal}');
+{/literal}
+</script>

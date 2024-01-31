@@ -8,6 +8,10 @@ msgctxt "Addons::description::lunar"
 msgid "Lunar Payment Gateway"
 msgstr "Lunar Payment Gateway"
 
+msgctxt "Languages::lunar.description"
+msgid "lunar.description"
+msgstr "Secure payment via © Lunar"
+
 msgctxt "Languages::lunar.payment_method"
 msgid "lunar.payment_method"
 msgstr "Select a payment method"
@@ -48,10 +52,6 @@ msgctxt "Languages::lunar.shop_title"
 msgid "lunar.shop_title"
 msgstr "Shop title"
 
-msgctxt "Languages::lunar.description"
-msgid "lunar.description"
-msgstr "Description"
-
 msgctxt "Languages::lunar.capture_status"
 msgid "lunar.capture_status"
 msgstr "Capture status"
@@ -78,7 +78,7 @@ msgstr "Voided Amount"
 
 msgctxt "Languages::lunar.amount"
 msgid "lunar.amount"
-msgstr "amount"
+msgstr "Amount"
 
 msgctxt "Languages::lunar.refund"
 msgid "lunar.refund"
@@ -95,8 +95,6 @@ msgstr "If checkout mode is Delayed, then when the order is placed will be set t
 msgctxt "Languages::lunar.void_status_help"
 msgid "lunar.void_status_help"
 msgstr "If checkout mode is Delayed, then when the order is set to this status will try to void the payment."
-
-
 
 msgctxt "Languages::lunar.create_payment_error"
 msgid "lunar.create_payment_error"
