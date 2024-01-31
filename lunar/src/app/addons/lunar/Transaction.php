@@ -64,6 +64,11 @@ class Transaction
             $api_response = $api_client->payments()->capture($transaction_id, $data);
         } catch (ApiException $e) {
             fn_log_event('general', 'lunar_capture', ['errors' => $e->getMessage()]);
+
+            if (! defined('PAYMENT_NOTIFICATION')) {
+                fn_set_notification(NotificationSeverity::ERROR, __('error'), __('lunar.capture_payment_error') . $e->getMessage());
+            }
+
             return null;
         }
 
@@ -107,6 +112,7 @@ class Transaction
             $api_response = $api_client->payments()->refund($transaction_id, $data);
         } catch (ApiException $e) {
             fn_log_event('general', 'lunar_refund', ['errors' => $e->getMessage()]);
+            fn_set_notification(NotificationSeverity::ERROR, __('error'), __('lunar.refund_payment_error') . $e->getMessage());
             return null;
         }
 
@@ -145,6 +151,7 @@ class Transaction
             $api_response = $api_client->payments()->cancel($transaction_id, $data);
         } catch (ApiException $e) {
             fn_log_event('general', 'lunar_void', ['errors' => $e->getMessage()]);
+            fn_set_notification(NotificationSeverity::ERROR, __('error'), __('lunar.void_payment_error') . $e->getMessage());
             return null;
         }
 

@@ -100,6 +100,18 @@ msgctxt "Languages::lunar.create_payment_error"
 msgid "lunar.create_payment_error"
 msgstr "Creating payment failed. Please try again."
 
+msgctxt "Languages::lunar.capture_payment_error"
+msgid "lunar.capture_payment_error"
+msgstr "Capture payment failed: "
+
+msgctxt "Languages::lunar.refund_payment_error"
+msgid "lunar.refund_payment_error"
+msgstr "Refund payment failed: "
+
+msgctxt "Languages::lunar.void_payment_error"
+msgid "lunar.void_payment_error"
+msgstr "Void payment failed: "
+
 msgctxt "Languages::lunar.we_are_processing_your_payment_text"
 msgid "lunar.we_are_processing_your_payment_text"
 msgstr "We are processing your payment, please do not refresh the page."
