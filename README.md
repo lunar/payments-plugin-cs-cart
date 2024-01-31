@@ -9,7 +9,7 @@
   1. Signup at [lunar.app](https://lunar.app) (it’s free)
   1. Create an account
   1. Create an app key for your CS-Cart website
-  1. Upload the plugin zip (`kp_lunar_0.0.0.zip`) trough the Add-ons panel and activate it (0.0.0 it's a version example)
+  1. Upload the plugin zip (`lunar_0.0.0.zip`) trough the Add-ons panel and activate it (0.0.0 it's a version example)
   1. Under Administration -> payment methods create a new payment method and select Lunar as the processor.
   1. On the configure tab, insert the app key and your public key in the settings for the Lunar payment gateway you just created
   

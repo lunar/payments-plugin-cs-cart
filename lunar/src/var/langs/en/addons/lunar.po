@@ -1,0 +1,161 @@
+msgid ""
+msgstr "Project-Id-Version: tygh\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: English\n"
+"Language: en_US"
+
+msgctxt "Addons::description::lunar"
+msgid "Lunar Payment Gateway"
+msgstr "Lunar Payment Gateway"
+
+msgctxt "Languages::lunar.description"
+msgid "lunar.description"
+msgstr "Secure payment via © Lunar"
+
+msgctxt "Languages::lunar.payment_method"
+msgid "lunar.payment_method"
+msgstr "Select a payment method"
+
+msgctxt "Languages::lunar.payment_method.card"
+msgid "lunar.payment_method.card"
+msgstr "Card"
+
+msgctxt "Languages::lunar.payment_method.mobilepay"
+msgid "lunar.payment_method.mobilepay"
+msgstr "MobilePay"
+
+msgctxt "Languages::lunar.app_key"
+msgid "lunar.app_key"
+msgstr "App key"
+
+msgctxt "Languages::lunar.public_key"
+msgid "lunar.public_key"
+msgstr "Public key"
+
+msgctxt "Languages::lunar.configuration_id"
+msgid "lunar.configuration_id"
+msgstr "Configuration ID"
+
+msgctxt "Languages::lunar.logo_url"
+msgid "lunar.logo_url"
+msgstr "Logo URL"
+
+msgctxt "Languages::lunar.checkout_mode"
+msgid "lunar.checkout_mode"
+msgstr "Checkout mode"
+
+msgctxt "Languages::lunar.delayed_status"
+msgid "lunar.delayed_status"
+msgstr "Delayed mode status"
+
+msgctxt "Languages::lunar.shop_title"
+msgid "lunar.shop_title"
+msgstr "Shop title"
+
+msgctxt "Languages::lunar.capture_status"
+msgid "lunar.capture_status"
+msgstr "Capture status"
+
+msgctxt "Languages::lunar.void_status"
+msgid "lunar.void_status"
+msgstr "Void status"
+
+msgctxt "Languages::authorized_amount"
+msgid "authorized_amount"
+msgstr "Authorized Amount"
+
+msgctxt "Languages::captured_amount"
+msgid "captured_amount"
+msgstr "Captured Amount"
+
+msgctxt "Languages::refunded_amount"
+msgid "refunded_amount"
+msgstr "Refunded Amount"
+
+msgctxt "Languages::voided_amount"
+msgid "voided_amount"
+msgstr "Voided Amount"
+
+msgctxt "Languages::lunar.amount"
+msgid "lunar.amount"
+msgstr "Amount"
+
+msgctxt "Languages::lunar.refund"
+msgid "lunar.refund"
+msgstr "Refund"
+
+msgctxt "Languages::lunar.capture_status_help"
+msgid "lunar.capture_status_help"
+msgstr "If checkout mode is Delayed, then when the order is set to this status will try to capture the amount."
+
+msgctxt "Languages::lunar.delayed_status_help"
+msgid "lunar.delayed_status_help"
+msgstr "If checkout mode is Delayed, then when the order is placed will be set to this status."
+
+msgctxt "Languages::lunar.void_status_help"
+msgid "lunar.void_status_help"
+msgstr "If checkout mode is Delayed, then when the order is set to this status will try to void the payment."
+
+msgctxt "Languages::lunar.create_payment_error"
+msgid "lunar.create_payment_error"
+msgstr "Creating payment failed. Please try again."
+
+msgctxt "Languages::lunar.capture_payment_error"
+msgid "lunar.capture_payment_error"
+msgstr "Capture payment failed: "
+
+msgctxt "Languages::lunar.refund_payment_error"
+msgid "lunar.refund_payment_error"
+msgstr "Refund payment failed: "
+
+msgctxt "Languages::lunar.void_payment_error"
+msgid "lunar.void_payment_error"
+msgstr "Void payment failed: "
+
+msgctxt "Languages::lunar.we_are_processing_your_payment_text"
+msgid "lunar.we_are_processing_your_payment_text"
+msgstr "We are processing your payment, please do not refresh the page."
+
+msgctxt "Languages::lunar.authorized_amount"
+msgid "lunar.authorized_amount"
+msgstr "Authorized Amount"
+
+msgctxt "Languages::lunar.captured_amount"
+msgid "lunar.captured_amount"
+msgstr "Captured Amount"
+
+msgctxt "Languages::lunar.refunded_amount"
+msgid "lunar.refunded_amount"
+msgstr "Refunded Amount"
+
+msgctxt "Languages::lunar.order_time"
+msgid "lunar.order_time"
+msgstr "Order time"
+
+msgctxt "Languages::lunar.currency_code"
+msgid "lunar.currency_code"
+msgstr "Currency"
+
+msgctxt "Languages::lunar.transaction_id"
+msgid "lunar.transaction_id"
+msgstr "Transaction ID"
+
+msgctxt "Languages::captured"
+msgid "captured"
+msgstr "Captured"
+
+msgctxt "Languages::refunded"
+msgid "refunded"
+msgstr "Refunded"
+
+msgctxt "Languages::voided"
+msgid "voided"
+msgstr "Voided"
+
+msgctxt "Languages::delayed"
+msgid "delayed"
+msgstr "Delayed"
+
+msgctxt "Languages::reason_text"
+msgid "reason_text"
+msgstr "Processor response"
