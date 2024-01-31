@@ -120,7 +120,7 @@ function fn_lunar_get_args($order_info)
             'lunarPluginVersion' => fn_get_addon_version('lunar'),
         ],
         'redirectUrl' => fn_url("payment_notification.payed?payment=lunar&order_id={$order['order_id']}", AREA, 'current'),
-        'preferredPaymentMethod' => 'card',
+        'preferredPaymentMethod' => $payment_params['payment_method'],
     ];
 
     if (!empty($payment_params['configuration_id'])) {
